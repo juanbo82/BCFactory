@@ -1,0 +1,89 @@
+<h2>¿Qué vamos a construir?</h2>
+<p>En este tutorial vamos a crear una <strong>Power App Canvas</strong> que se conecte a Business Central para mostrar una lista de clientes y permitir editar sus datos desde un dispositivo móvil.</p>
+
+<h2>Paso 1: Configurar el conector de BC</h2>
+
+<ol>
+    <li>Abre <strong>Power Apps</strong> (make.powerapps.com)</li>
+    <li>Crea una nueva <strong>Canvas App</strong> en formato tablet o phone</li>
+    <li>Ve a <strong>Data</strong> &gt; <strong>Add data</strong></li>
+    <li>Busca <strong>Dynamics 365 Business Central</strong></li>
+    <li>Selecciona tu <strong>environment</strong> y <strong>company</strong></li>
+    <li>Elige las tablas/APIs que necesitas (ej: <strong>customers</strong>)</li>
+</ol>
+
+<h2>Paso 2: Crear la pantalla de lista</h2>
+
+<p>Añade una <strong>Gallery</strong> vertical y configura su <code>Items</code>:</p>
+
+<pre><code>SortByColumns(
+    Filter(
+        bcCustomers,
+        StartsWith(displayName, SearchBox.Text)
+    ),
+    "displayName",
+    SortOrder.Ascending
+)</code></pre>
+
+<p>Dentro de la Gallery, añade labels para mostrar:</p>
+<ul>
+    <li><code>ThisItem.displayName</code> - Nombre del cliente</li>
+    <li><code>ThisItem.number</code> - Código de cliente</li>
+    <li><code>ThisItem.email</code> - Email</li>
+    <li><code>ThisItem.phoneNumber</code> - Teléfono</li>
+</ul>
+
+<h2>Paso 3: Pantalla de detalle</h2>
+
+<p>Crea una segunda pantalla con un <strong>Edit Form</strong> conectado al conector de BC. Configura:</p>
+
+<ul>
+    <li><code>Item</code>: <code>Gallery.Selected</code></li>
+    <li><code>DataSource</code>: tu conector de BC (customers)</li>
+    <li>Campos a mostrar: displayName, email, phoneNumber, address</li>
+</ul>
+
+<p>Para guardar cambios, en el botón de "Guardar":</p>
+
+<pre><code>SubmitForm(EditForm);
+Navigate(ListScreen, ScreenTransition.None);
+Notify("Cliente actualizado correctamente", NotificationType.Success)</code></pre>
+
+<h2>Paso 4: Usar APIs custom</h2>
+
+<p>Si necesitas datos que no están en las APIs estándar, puedes crear una <strong>API page</strong> en AL:</p>
+
+<pre><code><span class="kw">page</span> <span class="num">50100</span> <span class="str">"Custom Items API"</span>
+{
+    PageType = API;
+    APIGroup = <span class="str">'myGroup'</span>;
+    APIPublisher = <span class="str">'myPublisher'</span>;
+    APIVersion = <span class="str">'v1.0'</span>;
+    EntityName = <span class="str">'customItem'</span>;
+    EntitySetName = <span class="str">'customItems'</span>;
+    SourceTable = Item;
+    DelayedInsert = <span class="kw">true</span>;
+
+    <span class="kw">layout</span>
+    {
+        <span class="kw">area</span>(Content)
+        {
+            <span class="kw">repeater</span>(General)
+            {
+                <span class="kw">field</span>(no; <span class="str">"No."</span>) { }
+                <span class="kw">field</span>(description; Description) { }
+                <span class="kw">field</span>(unitPrice; <span class="str">"Unit Price"</span>) { }
+            }
+        }
+    }
+}</code></pre>
+
+<h2>Consejos</h2>
+
+<ul>
+    <li><strong>Delegation</strong>: Las funciones como <code>Filter</code> y <code>Sort</code> se delegan al servidor si usas el conector nativo</li>
+    <li><strong>Offline</strong>: Power Apps soporta modo offline con <code>SaveData</code> y <code>LoadData</code></li>
+    <li><strong>Performance</strong>: Selecciona solo los campos que necesitas con <code>ShowColumns</code></li>
+    <li><strong>Seguridad</strong>: Los permisos del usuario en BC aplican también en Power Apps</li>
+    <li><strong>Publicación</strong>: Publica la app y compártela con tu equipo desde el admin center</li>
+</ul>

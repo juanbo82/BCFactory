@@ -1,40 +1,45 @@
-# BC Dev Tools - Business Central Developer Portfolio
+# BC Factory - Business Central Developer Blog & Tools
 
-Herramientas interactivas y portfolio para desarrolladores de Microsoft Dynamics 365 Business Central.
+Blog, herramientas interactivas y recursos para desarrolladores de Microsoft Dynamics 365 Business Central.
 
-## Herramientas Incluidas
+## Secciones
 
-- **AL Snippet Generator** - Genera snippets de código AL para tablas, páginas, codeunits, reports, enums, XMLports y más.
-- **Table Extension Builder** - Constructor visual de tablas y extensiones de tabla con campos personalizados.
-- **Event Subscriber Generator** - Generador de suscripciones a eventos con eventos comunes precargados.
-- **Permission Set Generator** - Crea permission sets en formato AL para tus extensiones.
-- **Referencia de Objetos** - Consulta rápida de rangos, tipos de datos, triggers, propiedades y buenas prácticas.
+### Blog
+Posts sobre desarrollo en Business Central, integraciones, Power Platform y DevOps. Incluye:
+- Sistema de categorías y tags
+- Búsqueda de posts
+- Sidebar con perfil, posts recientes y tag cloud
+
+### Herramientas Interactivas
+- **AL Snippet Generator** - Genera código AL para 9 tipos de objeto
+- **Table Extension Builder** - Constructor visual de tablas
+- **Event Subscriber Generator** - Eventos comunes precargados + personalizado
+- **Permission Set Generator** - Genera PermissionSets en AL
+- **Referencia de Objetos** - Rangos, tipos de datos, triggers, propiedades, tips
+
+### Repositorios
+Enlaces a repositorios GitHub con código descargable.
+
+## Cómo añadir un nuevo post
+
+1. Crea un archivo HTML en `posts/` (ej: `posts/mi-nuevo-post.html`)
+2. Añade la entrada en `posts/posts.json`:
+   ```json
+   {
+       "slug": "mi-nuevo-post",
+       "title": "Título del post",
+       "date": "2026-05-12",
+       "category": "Business Central",
+       "tags": ["AL", "Tips"],
+       "excerpt": "Breve descripción del post...",
+       "file": "mi-nuevo-post.html"
+   }
+   ```
+3. Commit y push. GitHub Pages lo despliega automáticamente.
 
 ## Tecnología
 
-HTML + CSS + JavaScript vanilla. Sin dependencias, sin build tools, listo para GitHub Pages.
-
-## Despliegue en GitHub Pages
-
-1. Crear un repositorio en GitHub (ej: `tu-usuario.github.io` o `bc-dev-tools`)
-2. Subir el código:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit - BC Dev Tools portfolio"
-   git branch -M main
-   git remote add origin https://github.com/tu-usuario/tu-repo.git
-   git push -u origin main
-   ```
-3. Ir a **Settings > Pages** en el repositorio
-4. En **Source**, seleccionar `main` branch y `/ (root)`
-5. La web estará disponible en `https://tu-usuario.github.io/tu-repo/`
-
-## Personalización
-
-- Edita las secciones de **Sobre Mí**, **Experiencia** y **Contacto** en `index.html`
-- Modifica colores y estilos en `css/styles.css` (variables CSS en `:root`)
-- Añade o modifica herramientas en `js/tools/`
+HTML + CSS + JavaScript vanilla. Sin dependencias, sin build tools.
 
 ## Licencia
 

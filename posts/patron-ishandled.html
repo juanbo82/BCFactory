@@ -1,0 +1,69 @@
+<h2>¿Qué es el patrón IsHandled?</h2>
+<p>El patrón <strong>IsHandled</strong> es una convención de diseño en Business Central que permite a otros desarrolladores interceptar y reemplazar la lógica de negocio sin modificar el código original. Es la base de la <strong>extensibilidad</strong> en BC moderno.</p>
+
+<p>Cuando publicas un evento con un parámetro <code>var IsHandled: Boolean</code>, estás diciendo: "Antes de ejecutar mi lógica, dejo que alguien más la maneje por completo si lo necesita".</p>
+
+<h2>Implementación básica</h2>
+
+<p>Aquí tienes la estructura fundamental del patrón:</p>
+
+<pre><code><span class="kw">procedure</span> CalculateDiscount(var SalesLine: Record <span class="str">"Sales Line"</span>)
+<span class="kw">var</span>
+    IsHandled: Boolean;
+<span class="kw">begin</span>
+    IsHandled := <span class="kw">false</span>;
+    OnBeforeCalculateDiscount(SalesLine, IsHandled);
+    <span class="kw">if</span> IsHandled <span class="kw">then</span>
+        <span class="kw">exit</span>;
+
+    <span class="cm">// Lógica por defecto del descuento</span>
+    <span class="kw">if</span> SalesLine.Quantity > <span class="num">100</span> <span class="kw">then</span>
+        SalesLine.<span class="str">"Line Discount %"</span> := <span class="num">10</span>;
+
+    OnAfterCalculateDiscount(SalesLine);
+<span class="kw">end</span>;
+
+[IntegrationEvent(<span class="kw">false</span>, <span class="kw">false</span>)]
+<span class="kw">local procedure</span> OnBeforeCalculateDiscount(
+    <span class="kw">var</span> SalesLine: Record <span class="str">"Sales Line"</span>;
+    <span class="kw">var</span> IsHandled: Boolean)
+<span class="kw">begin</span>
+<span class="kw">end</span>;
+
+[IntegrationEvent(<span class="kw">false</span>, <span class="kw">false</span>)]
+<span class="kw">local procedure</span> OnAfterCalculateDiscount(
+    <span class="kw">var</span> SalesLine: Record <span class="str">"Sales Line"</span>)
+<span class="kw">begin</span>
+<span class="kw">end</span>;</code></pre>
+
+<h2>Cómo suscribirse al evento</h2>
+
+<p>Desde otra extensión, un desarrollador puede reemplazar completamente la lógica de descuento:</p>
+
+<pre><code>[EventSubscriber(ObjectType::Codeunit, Codeunit::<span class="str">"My Discount Logic"</span>,
+    <span class="str">'OnBeforeCalculateDiscount'</span>, <span class="str">''</span>, <span class="kw">false</span>, <span class="kw">false</span>)]
+<span class="kw">local procedure</span> HandleCustomDiscount(
+    <span class="kw">var</span> SalesLine: Record <span class="str">"Sales Line"</span>;
+    <span class="kw">var</span> IsHandled: Boolean)
+<span class="kw">begin</span>
+    <span class="kw">if</span> SalesLine.<span class="str">"Customer Price Group"</span> = <span class="str">'VIP'</span> <span class="kw">then begin</span>
+        SalesLine.<span class="str">"Line Discount %"</span> := <span class="num">25</span>;
+        IsHandled := <span class="kw">true</span>;
+    <span class="kw">end</span>;
+<span class="kw">end</span>;</code></pre>
+
+<h2>Reglas importantes</h2>
+
+<ul>
+    <li><strong>Siempre inicializa</strong> <code>IsHandled := false</code> antes del evento</li>
+    <li><strong>Comprueba IsHandled inmediatamente</strong> después de invocar el evento</li>
+    <li><strong>Pasa siempre como var</strong> el parámetro IsHandled para que los suscriptores puedan modificarlo</li>
+    <li><strong>No pongas lógica adicional</strong> después del <code>if IsHandled then exit</code> y antes de la lógica por defecto</li>
+    <li>Usa <strong>OnBefore</strong> para eventos que permiten cancelar la lógica y <strong>OnAfter</strong> para eventos que extienden la lógica</li>
+</ul>
+
+<h2>¿Cuándo NO usar IsHandled?</h2>
+
+<p>No todos los eventos necesitan el patrón IsHandled. Úsalo solo cuando la lógica que publicas <strong>puede ser completamente reemplazada</strong>. Si solo quieres notificar que algo ha ocurrido, un evento sin IsHandled es suficiente.</p>
+
+<p>Este patrón es utilizado extensivamente por Microsoft en el código base de Business Central, especialmente en codeunits de posting como <code>Sales-Post</code> y <code>Purch.-Post</code>.</p>

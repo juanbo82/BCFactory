@@ -1,0 +1,76 @@
+<h2>¿Por qué CI/CD para Business Central?</h2>
+<p>Implementar <strong>CI/CD</strong> (Integración y Despliegue Continuo) en tus proyectos de Business Central te permite detectar errores antes de llegar a producción, automatizar la compilación y testing de tus extensiones, y acelerar el ciclo de desarrollo.</p>
+
+<h2>Prerrequisitos</h2>
+
+<ul>
+    <li>Repositorio en <strong>GitHub</strong></li>
+    <li>Conocimientos básicos de <strong>Docker</strong> (para contenedores BC)</li>
+    <li>Acceso a <strong>Business Central Artifacts</strong></li>
+    <li>Familiaridad con <strong>YAML</strong></li>
+</ul>
+
+<h2>Estructura del workflow</h2>
+
+<p>Crea un archivo <code>.github/workflows/ci.yml</code> en tu repositorio:</p>
+
+<pre><code><span class="kw">name</span>: CI - Build and Test
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    branches: [ main, develop ]
+  <span class="kw">pull_request</span>:
+    branches: [ main ]
+
+<span class="kw">jobs</span>:
+  <span class="kw">build</span>:
+    runs-on: windows-latest
+    steps:
+      - <span class="kw">uses</span>: actions/checkout@v4
+
+      - <span class="kw">name</span>: Build Extension
+        <span class="kw">uses</span>: microsoft/AL-Go-Actions/Build@main
+        <span class="kw">with</span>:
+          shell: powershell
+          parentTelemetryScopeJson: '{}'
+
+      - <span class="kw">name</span>: Run Tests
+        <span class="kw">uses</span>: microsoft/AL-Go-Actions/RunTests@main
+        <span class="kw">with</span>:
+          shell: powershell</code></pre>
+
+<h2>Usando AL-Go for GitHub</h2>
+
+<p><strong>AL-Go for GitHub</strong> es la herramienta oficial de Microsoft para CI/CD con Business Central. Simplifica enormemente la configuración:</p>
+
+<ol>
+    <li>Usa el template de <a href="https://github.com/microsoft/AL-Go-PTE">AL-Go-PTE</a> para per-tenant extensions</li>
+    <li>Configura los settings en <code>.AL-Go/settings.json</code></li>
+    <li>Los workflows se generan automáticamente</li>
+</ol>
+
+<pre><code>{
+    <span class="str">"country"</span>: <span class="str">"es"</span>,
+    <span class="str">"repoVersion"</span>: <span class="str">"1.0"</span>,
+    <span class="str">"artifact"</span>: <span class="str">"bcartifacts/sandbox//es/latest"</span>,
+    <span class="str">"testFolders"</span>: [<span class="str">"test/"</span>]
+}</code></pre>
+
+<h2>Flujo recomendado</h2>
+
+<ol>
+    <li><strong>Push a develop</strong> &rarr; Build automático + tests</li>
+    <li><strong>Pull Request a main</strong> &rarr; Build + tests + code review</li>
+    <li><strong>Merge a main</strong> &rarr; Build + tests + generación del .app</li>
+    <li><strong>Release tag</strong> &rarr; Publicación automática del artefacto</li>
+</ol>
+
+<h2>Consejos</h2>
+
+<ul>
+    <li>Usa <strong>caching</strong> de artefactos para acelerar los builds</li>
+    <li>Separa los <strong>tests unitarios</strong> de los <strong>tests de integración</strong></li>
+    <li>Configura <strong>branch protection rules</strong> para requerir que el CI pase antes de merge</li>
+    <li>Guarda los <strong>secrets</strong> (passwords, tokens) en GitHub Secrets, nunca en el código</li>
+    <li>Usa <strong>AL-Go</strong> siempre que sea posible; es mantenido por Microsoft</li>
+</ul>

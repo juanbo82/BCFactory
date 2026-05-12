@@ -1,0 +1,67 @@
+<h2>Introducción</h2>
+<p>Las <strong>APIs REST de Business Central</strong> permiten que aplicaciones externas lean y escriban datos directamente en tu entorno BC. Combinándolas con <strong>Power Automate</strong>, puedes automatizar procesos sin escribir una sola línea de código AL.</p>
+
+<h2>Configuración de la autenticación OAuth 2.0</h2>
+
+<p>Para conectar Power Automate con BC vía API, necesitas registrar una aplicación en <strong>Microsoft Entra ID</strong> (Azure AD):</p>
+
+<ol>
+    <li>Ve al portal de <strong>Azure</strong> &gt; Microsoft Entra ID &gt; App registrations</li>
+    <li>Crea un <strong>New registration</strong> con el nombre de tu aplicación</li>
+    <li>Añade un <strong>Client Secret</strong> en Certificates & secrets</li>
+    <li>En API permissions, añade <strong>Dynamics 365 Business Central</strong> &gt; API.ReadWrite.All</li>
+    <li>Concede <strong>Admin consent</strong></li>
+</ol>
+
+<h2>Estructura de las URLs de la API</h2>
+
+<p>Las APIs de BC siguen esta estructura base:</p>
+
+<pre><code>https://api.businesscentral.dynamics.com/v2.0/{tenantId}/{environmentName}/api/v2.0/</code></pre>
+
+<p>Algunos endpoints comunes:</p>
+
+<pre><code><span class="cm">// Clientes</span>
+GET /customers
+GET /customers({id})
+
+<span class="cm">// Pedidos de venta</span>
+GET /salesOrders
+POST /salesOrders
+
+<span class="cm">// Artículos</span>
+GET /items
+PATCH /items({id})</code></pre>
+
+<h2>Ejemplo en Power Automate</h2>
+
+<p>Para crear un flujo que lea clientes de BC:</p>
+
+<ol>
+    <li>Añade el trigger que necesites (manual, schedule, etc.)</li>
+    <li>Añade una acción <strong>HTTP</strong></li>
+    <li>Configura el método <strong>GET</strong> y la URL del endpoint</li>
+    <li>En Authentication, selecciona <strong>Active Directory OAuth</strong></li>
+    <li>Rellena Tenant, Client ID y Client Secret</li>
+    <li>Resource: <code>https://api.businesscentral.dynamics.com</code></li>
+</ol>
+
+<h2>Ejemplo de POST (crear cliente)</h2>
+
+<pre><code>{
+    <span class="str">"number"</span>: <span class="str">"C00100"</span>,
+    <span class="str">"displayName"</span>: <span class="str">"Contoso Ltd."</span>,
+    <span class="str">"type"</span>: <span class="str">"Company"</span>,
+    <span class="str">"email"</span>: <span class="str">"info@contoso.com"</span>,
+    <span class="str">"phoneNumber"</span>: <span class="str">"+34 600 123 456"</span>
+}</code></pre>
+
+<h2>Consejos</h2>
+
+<ul>
+    <li>Usa <code>$filter</code> para filtrar resultados: <code>?$filter=displayName eq 'Contoso'</code></li>
+    <li>Usa <code>$select</code> para pedir solo los campos que necesitas</li>
+    <li>Usa <code>$top</code> para limitar resultados y paginar</li>
+    <li>Siempre incluye el header <code>If-Match</code> con el <code>@odata.etag</code> al hacer PATCH</li>
+    <li>Las APIs custom se definen como <code>page</code> con <code>PageType = API</code> en AL</li>
+</ul>

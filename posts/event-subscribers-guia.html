@@ -1,0 +1,69 @@
+<h2>¿Qué son los Event Subscribers?</h2>
+<p>Los <strong>Event Subscribers</strong> son el mecanismo principal para extender la funcionalidad de Business Central sin modificar el código fuente. Permiten "escuchar" cuando ocurre algo en el sistema y ejecutar tu lógica personalizada.</p>
+
+<h2>Tipos de eventos</h2>
+
+<h3>1. Integration Events</h3>
+<p>Los más comunes. Son publicados por Microsoft o por otras extensiones para permitir que terceros extiendan la lógica:</p>
+
+<pre><code><span class="cm">// El publisher define el evento</span>
+[IntegrationEvent(<span class="kw">false</span>, <span class="kw">false</span>)]
+<span class="kw">local procedure</span> OnBeforePostSalesDoc(
+    <span class="kw">var</span> SalesHeader: Record <span class="str">"Sales Header"</span>;
+    <span class="kw">var</span> IsHandled: Boolean)
+<span class="kw">begin</span>
+<span class="kw">end</span>;</code></pre>
+
+<h3>2. Business Events</h3>
+<p>Indican que algo de negocio ha ocurrido. No se puede modificar el comportamiento, solo reaccionar:</p>
+
+<pre><code>[BusinessEvent(<span class="kw">false</span>)]
+<span class="kw">local procedure</span> OnAfterCustomerCreated(
+    CustomerNo: Code[<span class="num">20</span>])
+<span class="kw">begin</span>
+<span class="kw">end</span>;</code></pre>
+
+<h3>3. Trigger Events</h3>
+<p>Se generan automáticamente para los triggers de tabla (OnInsert, OnModify, OnDelete, OnValidate). No necesitas declararlos, BC los publica automáticamente:</p>
+
+<pre><code><span class="cm">// Suscribirse al OnAfterValidate del campo Name de Customer</span>
+[EventSubscriber(ObjectType::Table, Database::Customer,
+    <span class="str">'OnAfterValidateEvent'</span>, <span class="str">'Name'</span>, <span class="kw">false</span>, <span class="kw">false</span>)]
+<span class="kw">local procedure</span> CustomerNameValidated(
+    <span class="kw">var</span> Rec: Record Customer;
+    <span class="kw">var</span> xRec: Record Customer;
+    CurrFieldNo: Integer)
+<span class="kw">begin</span>
+    <span class="cm">// Tu lógica al cambiar el nombre del cliente</span>
+<span class="kw">end</span>;</code></pre>
+
+<h2>Estructura del atributo EventSubscriber</h2>
+
+<pre><code>[EventSubscriber(
+    ObjectType::Codeunit,       <span class="cm">// Tipo de objeto que publica</span>
+    Codeunit::<span class="str">"Sales-Post"</span>,     <span class="cm">// Objeto específico</span>
+    <span class="str">'OnBeforePostSalesDoc'</span>,     <span class="cm">// Nombre del evento</span>
+    <span class="str">''</span>,                         <span class="cm">// Element name (para triggers de campo)</span>
+    <span class="kw">false</span>,                      <span class="cm">// SkipOnMissingLicense</span>
+    <span class="kw">false</span>                       <span class="cm">// SkipOnMissingPermission</span>
+)]</code></pre>
+
+<h2>Buenas prácticas</h2>
+
+<ul>
+    <li><strong>Un codeunit por área funcional</strong>: No mezcles suscriptores de ventas con los de compras</li>
+    <li><strong>Nombra claramente</strong>: El nombre del procedure debe indicar qué hace, no a qué se suscribe</li>
+    <li><strong>Evita lógica pesada</strong> en suscriptores de eventos frecuentes (OnAfterGetRecord, por ejemplo)</li>
+    <li><strong>Usa el patrón IsHandled</strong> cuando tu evento lo soporte</li>
+    <li><strong>Documenta</strong> por qué te suscribes a cada evento</li>
+    <li><strong>Testea</strong> siempre que el evento se dispara cuando esperas</li>
+</ul>
+
+<h2>Errores comunes</h2>
+
+<ul>
+    <li>Olvidar que los parámetros <code>var</code> modifican el registro original</li>
+    <li>Crear bucles infinitos al modificar un registro dentro de su propio OnModify</li>
+    <li>No manejar errores dentro del suscriptor (un error en un subscriber rompe todo el proceso)</li>
+    <li>Suscribirse al evento equivocado (OnBefore vs OnAfter)</li>
+</ul>

@@ -1,0 +1,60 @@
+<h2>¿Por qué son importantes los Permission Sets?</h2>
+<p>Cada extensión que publicas en Business Central necesita definir <strong>qué permisos necesita</strong> para funcionar correctamente. Si no defines Permission Sets adecuados, tus usuarios recibirán errores de permisos al intentar usar tu funcionalidad.</p>
+
+<h2>Formato AL (recomendado)</h2>
+
+<p>Desde BC 20+, el formato recomendado es AL en lugar de XML:</p>
+
+<pre><code><span class="kw">permissionset</span> <span class="num">50100</span> <span class="str">"MYAPP Full Access"</span>
+{
+    Caption = <span class="str">'My App - Full Access'</span>;
+    Assignable = <span class="kw">true</span>;
+
+    Permissions =
+        <span class="kw">tabledata</span> <span class="str">"My Custom Table"</span> = RIMD,
+        <span class="kw">table</span> <span class="str">"My Custom Table"</span> = X,
+        <span class="kw">page</span> <span class="str">"My Custom List"</span> = X,
+        <span class="kw">page</span> <span class="str">"My Custom Card"</span> = X,
+        <span class="kw">codeunit</span> <span class="str">"My Custom Logic"</span> = X,
+        <span class="kw">report</span> <span class="str">"My Custom Report"</span> = X;
+}</code></pre>
+
+<h2>Niveles de permisos</h2>
+
+<ul>
+    <li><strong>R</strong> - Read (lectura)</li>
+    <li><strong>I</strong> - Insert (inserción)</li>
+    <li><strong>M</strong> - Modify (modificación)</li>
+    <li><strong>D</strong> - Delete (eliminación)</li>
+    <li><strong>X</strong> - Execute (ejecución, para objetos no-tabla)</li>
+</ul>
+
+<h2>Permission Set Extension</h2>
+
+<p>Si necesitas añadir permisos a un permission set existente (por ejemplo, el de BC base):</p>
+
+<pre><code><span class="kw">permissionsetextension</span> <span class="num">50100</span> <span class="str">"MYAPP D365 Basic Ext"</span> <span class="kw">extends</span> <span class="str">"D365 BASIC"</span>
+{
+    Permissions =
+        <span class="kw">tabledata</span> <span class="str">"My Custom Table"</span> = R,
+        <span class="kw">page</span> <span class="str">"My Custom List"</span> = X;
+}</code></pre>
+
+<h2>Errores comunes</h2>
+
+<ul>
+    <li><strong>Olvidar tabledata</strong>: Los permisos de <code>table</code> y <code>tabledata</code> son diferentes. <code>table</code> es para el esquema, <code>tabledata</code> para los datos</li>
+    <li><strong>No incluir permisos indirectos</strong>: Si tu codeunit lee de tabla X, los usuarios necesitan permisos de lectura en tabla X</li>
+    <li><strong>Assignable = false por defecto</strong>: Si no pones <code>Assignable = true</code>, el administrador no podrá asignar el permission set a usuarios</li>
+    <li><strong>No crear un permission set de solo lectura</strong>: Siempre ofrece al menos dos niveles: completo y solo lectura</li>
+</ul>
+
+<h2>Buenas prácticas</h2>
+
+<ul>
+    <li>Crea al menos <strong>dos permission sets</strong>: uno de acceso completo y otro de solo lectura</li>
+    <li>Usa <strong>prefijos consistentes</strong> en los nombres: <code>MYAPP Full Access</code>, <code>MYAPP Read Only</code></li>
+    <li>Documenta qué hace cada permission set en el <strong>Caption</strong></li>
+    <li>Testea siempre con un usuario que tenga <strong>solo</strong> tu permission set asignado</li>
+    <li>Revisa los permisos <strong>indirectos</strong>: si tu código lee Setup tables, incluye esos permisos</li>
+</ul>

@@ -1,0 +1,56 @@
+[
+    {
+        "slug": "patron-ishandled-business-central",
+        "title": "El patrón IsHandled en Business Central: Cómo usarlo correctamente",
+        "date": "2026-05-12",
+        "category": "Business Central",
+        "tags": ["AL", "Patterns", "Best Practices"],
+        "excerpt": "El patrón IsHandled es fundamental para crear extensiones mantenibles en Business Central. En este post explico cómo implementarlo correctamente y por qué es tan importante.",
+        "file": "patron-ishandled.html"
+    },
+    {
+        "slug": "apis-rest-business-central",
+        "title": "Consumir APIs REST de Business Central desde Power Automate",
+        "date": "2026-05-10",
+        "category": "Integraciones",
+        "tags": ["API", "Power Automate", "REST", "OAuth"],
+        "excerpt": "Guía paso a paso para conectar Power Automate con las APIs REST de Business Central usando OAuth 2.0, incluyendo ejemplos prácticos de lectura y escritura de datos.",
+        "file": "apis-rest-bc.html"
+    },
+    {
+        "slug": "event-subscribers-guia-completa",
+        "title": "Guía completa de Event Subscribers en AL",
+        "date": "2026-05-08",
+        "category": "Business Central",
+        "tags": ["AL", "Events", "Extensions"],
+        "excerpt": "Los Event Subscribers son la piedra angular del desarrollo en BC moderno. Aprende a suscribirte a eventos de negocio, de integración y de tabla con ejemplos reales.",
+        "file": "event-subscribers-guia.html"
+    },
+    {
+        "slug": "cicd-business-central-github-actions",
+        "title": "CI/CD para Business Central con GitHub Actions",
+        "date": "2026-05-05",
+        "category": "DevOps",
+        "tags": ["CI/CD", "GitHub Actions", "ALOps", "Docker"],
+        "excerpt": "Configura un pipeline completo de integración y despliegue continuo para tus extensiones de Business Central usando GitHub Actions y contenedores Docker.",
+        "file": "cicd-github-actions.html"
+    },
+    {
+        "slug": "permission-sets-al-buenas-practicas",
+        "title": "Permission Sets en AL: Buenas prácticas y errores comunes",
+        "date": "2026-05-02",
+        "category": "Business Central",
+        "tags": ["AL", "Security", "Permission Sets"],
+        "excerpt": "Cómo diseñar y gestionar Permission Sets correctamente en tus extensiones AL, evitando los errores más comunes que causan problemas en producción.",
+        "file": "permission-sets-al.html"
+    },
+    {
+        "slug": "power-apps-canvas-bc",
+        "title": "Crear una Power App Canvas conectada a Business Central",
+        "date": "2026-04-28",
+        "category": "Power Platform",
+        "tags": ["Power Apps", "Canvas App", "Connector"],
+        "excerpt": "Tutorial para crear una aplicación móvil con Power Apps Canvas que se conecta directamente a Business Central para consultar y modificar datos en tiempo real.",
+        "file": "power-apps-canvas-bc.html"
+    }
+]
